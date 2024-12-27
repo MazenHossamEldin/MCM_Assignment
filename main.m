@@ -29,7 +29,7 @@ km = kinematicModel(gm);
 
 %% Compute trasformation of the tool w.r.t. the base frame
 % Update direct geoemtry given q=q0
-
+gm.updateDirectGeometry(q0);
 bTt = gm.getToolTransformWrtBase() ;
 
 disp("eTt");
@@ -104,12 +104,15 @@ plot3(bTg(1,4),bTg(2,4),bTg(3,4),'ro')
 
 %%%%%%% Kinematic Simulation %%%%%%%
 for i = t
-    % Update geometric and kinematic model and use the cartesian control ... to do
-
+    % Update geometric and kinematic model and use the cartesian control 
+    gm.updateDirectGeometry(q);
+    km.updateJacobian();
 
     %% INVERSE KINEMATIC
-    % Compute desired joint velocities ... to do
-    q_dot = ...;
+    % Compute Cartesian reference velocities
+    x_dot = cc.getCartesianReference(bTg) ;
+    % Compute desired joint velocities 
+    q_dot = km.J \ x_dot ;
 
     % simulating the robot - implement KinematicSimulation
     q = KinematicSimulation(q, q_dot, dt, qmin, qmax);

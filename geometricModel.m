@@ -107,15 +107,12 @@ classdef geometricModel < handle
             % Inputs : None 
             % bTt : transformation matrix from the manipulator base to the tool
 
-            bTk = eye(4) ;
-            for i=1:self.jointNumber
-                temp_bTi = self.iTj(:,:,i) ;
-                bTe = bTk * temp_bTi ;
-                clear temp_bTi ;
-            end
-            bTt = bTe * self.eTt ;
+           % Compute the transformation from the base to the end-effector
+                bTe = self.getTransformWrtBase(self.jointNumber);
+    
+                % Compute the transformation from the base to the tool frame
+                bTt = bTe * self.eTt;
         end
-
     end
 end
 
