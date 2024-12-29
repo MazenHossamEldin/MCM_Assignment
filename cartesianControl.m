@@ -24,46 +24,29 @@ classdef cartesianControl < handle
         function [x_dot] = getCartesianReference(self, bTg)
         % Compute the Cartesian error between the current end-effector frame and the goal frame
         bTt = self.gm.getToolTransformWrtBase();
-
+    
         % Position error
         r_error = bTg(1:3, 4) - bTt(1:3, 4);
-
-        % Orientation error (using Euler angles)
-        current_rho = rotm2eul(bTt(1:3, 1:3));
-        goal_rho = rotm2eul(bTg(1:3, 1:3));
-        rho_error = goal_rho' - current_rho';
-
+    
+        % Compute relative rotation matrix
+        tRg_e = bTt(1:3, 1:3)' * bTg(1:3, 1:3);
+         [U, ~, V] = svd(tRg_e); % Ensure orthogonality
+         tRg_e = U * V'; 
+    
+        % Extract orientation error (as angle-axis representation)
+        [h_error,theta_error] = RotToAngleAxis(tRg_e) ;
+        rho_e = h_error *theta_error ;
+        b_rho_e = bTt(1:3 , 1:3) *rho_e ;
+    
         % Combine errors
-        e = [r_error; rho_error];
-
-        % Apply proportional control gains
-        x_dot = [self.k_a * e(4:6); self.k_l * e(1:3)];
-    end
-
-    % function [x_dot] = getCartesianReference(self, bTg)
-    %     % Compute the Cartesian error between the current end-effector frame and the goal frame
-    %     bTt = self.gm.getToolTransformWrtBase();
-    % 
-    %     % Position error
-    %     position_error = bTg(1:3, 4) - bTt(1:3, 4);
-    % 
-    %     % Orientation error (using Euler angles)
-    %     current_orientation = rotm2eul(bTt(1:3, 1:3));
-    %     goal_orientation = rotm2eul(bTg(1:3, 1:3));
-    %     orientation_error = goal_orientation' - current_orientation';
-    % 
-    %     % Combine errors
-    %     e = [orientation_error; position_error];
-    % 
-    %     % Generalized Velocity 
-    %     nu_desired = [ goal_orientation' ; bTg(1:3,4)] ;
-    % 
-    %     % Gain matrix
-    %     Lambda = diag([self.k_a, self.k_a, self.k_a, self.k_l, self.k_l, self.k_l]);
-    % 
-    %     % Compute the desired velocities with feedforward term
-    %     x_dot = Lambda * e + nu_desired;
-    % end
+        e = [b_rho_e; r_error];
+    
+        % Gain matrix
+        Lambda = diag([self.k_a, self.k_a, self.k_a, self.k_l, self.k_l, self.k_l]);
+    
+        % Compute the desired velocities with feedforward term
+        x_dot = Lambda * e ;
+        end
     end
 end
 

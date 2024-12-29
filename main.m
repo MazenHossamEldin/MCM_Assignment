@@ -40,7 +40,7 @@ disp(bTt);
 %% Define the goal frame and initialize cartesian control
 % Goal definition 
 bOg = [ -0.14 ; -0.85 ; 0.6 ] ;
-b_eta_g = [ -3.02 ; -0.4 ; 1.33 ] ;
+b_eta_g = [ -3.02 ; -0.4 ; -1.33 ] ;
 bRg = YPRToRot(b_eta_g) ;
 bTg = [ bRg        bOg
              0 0 0          1   ]; 
