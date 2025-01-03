@@ -13,6 +13,7 @@ classdef kinematicModel < handle
             if nargin > 0
                 self.gm = gm;
                 self.J = zeros(6, self.gm.jointNumber);
+                self.
             else
                 error('Not enough input arguments (geometricModel)')
             end
@@ -56,5 +57,10 @@ classdef kinematicModel < handle
             end
         end    
         end
-    end
+        function RBJ =RigidBodyJacobian(self)
+            ert = self.gm.eTt(1:3,4) ;
+            RBJ = [eye(3)           zeros(3,3)
+                        Cross(ert).'    eye(3)      ] ;
+        end
+        end
 end

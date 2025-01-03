@@ -37,6 +37,8 @@ disp(eTt);
 disp('bTt q = q0');
 disp(bTt);
 
+% Calculate Rigid Body Jacobian
+RBJ = kinematicModel.RigidBodyJacobian ;
 %% Define the goal frame and initialize cartesian control
 % Goal definition 
 bOg = [ -0.14 ; -0.85 ; 0.6 ] ;
